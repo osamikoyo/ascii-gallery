@@ -1,20 +1,22 @@
 package data
 
 import (
+	"context"
+	"time"
+
 	"github.com/osamikoyo/ascii-gallery/internal/data/models"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Storage struct{
-	*gorm.DB
+	collection mongo.Collection
+	ctx context.Context
 }
 
-func Connect() (*Storage, error) {
-	db, err := gorm.Open(sqlite.Open("storage/main.db"))
-	return &Storage{DB: db}, err
-}
+func New() (*Storage, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 20 * time.Second)
+	defer cancel()
 
-func (s *Storage) AddArt(art models.Art) error {
-	return s.Create(&art).Error
+	clientOptions := options.Client().ApplyURI("mongodb://127.0.0.1:27017/main")
 }
